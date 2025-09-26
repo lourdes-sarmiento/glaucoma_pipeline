@@ -3,7 +3,7 @@ glaucoma_genes=["MYOC","CYP1B1","FOXC1","PITX2","TBK1","OPTN"]
 
 def load_vcf(vcf_file):
     """Carga un archivo VCF y lo convierte en un DataFrame de pandas."""
-    df=pd.read_csv(vcf_file, sep='\t', comment='#', header=None)
+    df=pd.read_csv(vcf_file, sep=r'\s+', comment='#', header=None, engine='python')
     df.columns=['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
     return df
 
@@ -14,12 +14,12 @@ def filter_by_genes(df,genes):
 
 def save_results(df, output_file):
     """Guarda las variantes filtradas en un archivo TSV."""
-    df.to_csv(output_file, sep='\t', index=False)
+    df.to_csv(output_file, sep="\t", index=False)
 
 if __name__ == "__main__":
     #archivos de entrada y salida
-    input_vcf="data/example.vcf"
-    output_file="results/glaucoma_variants.csv"
+    input_vcf=r"c:\Users\lourd\glaucoma_pipeline.py\glaucoma_pipeline\data\example.vcf"
+    output_file=r"c:\Users\lourd\glaucoma_pipeline.py\glaucoma_pipeline\results\glaucoma_variants.csv"
     #cargar VCF
     print("Cargando archivo VCF...")
     vcf_df=load_vcf(input_vcf)
