@@ -3,18 +3,27 @@ glaucoma_genes=["MYOC","CYP1B1","FOXC1","PITX2","TBK1","OPTN"]
 
 def load_vcf(vcf_file):
     """Carga un archivo VCF y lo convierte en un DataFrame de pandas."""
-    df=pd.read_csv(vcf_file, sep=r'\s+', comment='#', header=None, engine='python')
-    df.columns=['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
-    return df
+    try:
+        df=pd.read_csv(vcf_file, sep=r"\s+", comment='#',header=None)
+        df.columns=['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
+        return df
+    except FileNotFoundError:
+        print(f"Error:archivo{vcf_file}no encontrado")
+        return pd.DataFrame()
 
 def filter_by_genes(df,genes):
     """Filtra variantes que contengan genes de interés en la columna INFO."""
-    mask=df["INFO"].apply(lambda x: any(gene in x for gene in genes))
+    mask=df['INFO'].apply(lambda x: any(gene in str(x) for gene in genes)if pd.notnull(x) else False)
     return df[mask]
 
 def save_results(df, output_file):
     """Guarda las variantes filtradas en un archivo TSV."""
-    df.to_csv(output_file, sep="\t", index=False)
+    if df.empty:
+        print("No se encontraron variantes asocioados a los genes de interes. ")
+    else:
+        df.to_csv(output_file, sep="\t", index=False)
+        print(f"Resultados guardados en {output_file}")
+    
 
 if __name__ == "__main__":
     #archivos de entrada y salida
